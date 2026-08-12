@@ -1,0 +1,7 @@
+[
+  {"provider": "groq", "model": "openai/gpt-oss-20b", "label": "Groq-GPT-OSS-20B", "temperature": 0.0},
+  {"provider": "groq", "model": "openai/gpt-oss-120b", "label": "Groq-GPT-OSS-120B", "temperature": 0.0},
+  {"provider": "groq", "model": "qwen/qwen3.6-27b", "label": "Groq-Qwen3-32B", "temperature": 0.0},
+  {"provider": "gemini", "model": "gemini-1.5-flash", "label": "Gemini-1.5-Flash", "temperature": 0.0},
+  {"provider": "openrouter", "model": "meta-llama/llama-3.2-3b-instruct:free", "label": "OpenRouter-Llama3.2-3B-Free", "temperature": 0.0}
+]
