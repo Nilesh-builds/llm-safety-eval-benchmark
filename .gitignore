@@ -13,3 +13,5 @@ __pycache__/
 .ipynb_checkpoints/
 results/verification*/
 results/runs/
+results/human_review/
+results/merged/merged_raw_responses.json

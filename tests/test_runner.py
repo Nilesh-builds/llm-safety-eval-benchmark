@@ -73,3 +73,23 @@ def test_mock_responses_are_still_scored(tmp_path, monkeypatch):
     assert rows[0]["response_status"] == "mock"
     assert rows[0]["valid_score"] == "True"
     assert rows[0]["final_score"] != ""
+
+
+def test_case_ids_select_targeted_cases(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        "src.models.ModelClient.generate",
+        lambda self, prompt: "[MOCK RESPONSE from TestModel — placeholder]",
+    )
+    models_config, judges_config, data = _write_inputs(tmp_path)
+    out_dir = tmp_path / "out"
+
+    run(
+        str(models_config),
+        str(data),
+        str(out_dir),
+        str(judges_config),
+        case_ids=["FA-1"],
+    )
+
+    rows = _read_scores(out_dir)
+    assert [row["test_id"] for row in rows] == ["FA-1"]

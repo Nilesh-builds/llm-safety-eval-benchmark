@@ -33,6 +33,7 @@ def run(
     attempts: int = 1,
     case_offset: int = 0,
     case_limit: int | None = None,
+    case_ids: list[str] | None = None,
 ):
     if attempts < 1:
         raise ValueError("attempts must be at least 1")
@@ -47,6 +48,14 @@ def run(
         if case_limit < 1:
             raise ValueError("case_limit must be at least 1")
         selected_cases = selected_cases[:case_limit]
+    if case_ids:
+        requested_ids = set(case_ids)
+        selected_cases = [tc for tc in test_cases if tc["id"] in requested_ids]
+        missing_ids = requested_ids - {tc["id"] for tc in selected_cases}
+        if missing_ids:
+            raise ValueError(f"Unknown case IDs: {sorted(missing_ids)}")
+        if not selected_cases:
+            raise ValueError("case_ids must contain at least one known case ID")
 
     models = load_models_from_config(model_configs)
 
@@ -165,6 +174,13 @@ if __name__ == "__main__":
     parser.add_argument("--attempts", type=int, default=1)
     parser.add_argument("--case-offset", type=int, default=0)
     parser.add_argument("--case-limit", type=int, default=None)
+    parser.add_argument(
+        "--case-id",
+        action="append",
+        dest="case_ids",
+        default=None,
+        help="Run a specific test case ID; repeat for targeted retries",
+    )
     args = parser.parse_args()
     output = args.out
     if output is None:
@@ -181,4 +197,5 @@ if __name__ == "__main__":
         attempts=args.attempts,
         case_offset=args.case_offset,
         case_limit=args.case_limit,
+        case_ids=args.case_ids,
     )

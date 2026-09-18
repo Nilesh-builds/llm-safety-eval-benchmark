@@ -62,6 +62,7 @@ def load_runs(runs_root: str, label: str | None, dataset_version: str | None) ->
             "created_at": _parse_created_at(manifest, run_id),
             "manifest": manifest,
             "rows": rows,
+            "raw_path": os.path.join(run_dir, "raw_responses.json"),
         })
     runs.sort(key=lambda r: r["created_at"])
     return runs
@@ -103,6 +104,30 @@ def merge_rows(runs: list[dict]) -> tuple[list[dict], list[str]]:
     return merged, warnings
 
 
+def merge_raw_responses(runs: list[dict], merged_scores: list[dict]) -> list[dict]:
+    """Select raw responses matching the deduplicated score rows."""
+    selected = []
+    for score in merged_scores:
+        run = next((item for item in runs if item["run_id"] == score.get("run_id")), None)
+        if not run or not os.path.isfile(run["raw_path"]):
+            continue
+        if "raw_rows" not in run:
+            with open(run["raw_path"], encoding="utf-8") as f:
+                run["raw_rows"] = json.load(f)
+        match = next(
+            (
+                row for row in run["raw_rows"]
+                if row.get("model") == score.get("model")
+                and row.get("test_id") == score.get("test_id")
+                and str(row.get("attempt", 1)) == str(score.get("attempt", 1))
+            ),
+            None,
+        )
+        if match:
+            selected.append(match)
+    return selected
+
+
 def coverage_report(merged: list[dict]) -> str:
     lines = []
     for model in sorted({r["model"] for r in merged}):
@@ -117,7 +142,13 @@ def coverage_report(merged: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def merge_runs(runs_root: str, out_dir: str, label: str | None, dataset_version: str | None) -> list[dict]:
+def merge_runs(
+    runs_root: str,
+    out_dir: str,
+    label: str | None,
+    dataset_version: str | None,
+    exclude_models: list[str] | None = None,
+) -> list[dict]:
     runs = load_runs(runs_root, label, dataset_version)
     if not runs:
         raise SystemExit(f"No runs with run_manifest.json + scores.csv found under {runs_root}")
@@ -125,6 +156,10 @@ def merge_runs(runs_root: str, out_dir: str, label: str | None, dataset_version:
     for r in runs:
         print(f"  {r['run_id']}  {r['manifest'].get('run_label', '?'):11s} "
               f"dataset={r['manifest'].get('dataset_version', '?')} cases={r['manifest'].get('case_count', '?')}")
+    if exclude_models:
+        for r in runs:
+            r["rows"] = [row for row in r["rows"] if row.get("model") not in exclude_models]
+        print(f"Excluding models: {exclude_models}")
 
     merged, warnings = merge_rows(runs)
     for w in warnings:
@@ -137,6 +172,11 @@ def merge_runs(runs_root: str, out_dir: str, label: str | None, dataset_version:
         writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(merged)
+    raw_rows = merge_raw_responses(runs, merged)
+    if raw_rows:
+        with open(os.path.join(out_dir, "merged_raw_responses.json"), "w", encoding="utf-8") as f:
+            json.dump(raw_rows, f, indent=2)
+        print(f"Wrote {len(raw_rows)} merged raw responses to {out_dir}/merged_raw_responses.json")
     print(f"\n{coverage_report(merged)}")
     print(f"\nWrote {len(merged)} merged rows to {out_path}")
     print(f"Build the report with: python -m src.report --scores {out_path} --out {out_dir}")
@@ -149,5 +189,11 @@ if __name__ == "__main__":
     parser.add_argument("--out", default="results/merged")
     parser.add_argument("--label", default=None, help="Filter by run_label, e.g. real")
     parser.add_argument("--dataset-version", default=None, help="Filter by dataset version")
+    parser.add_argument(
+        "--exclude-model",
+        action="append",
+        default=[],
+        help="Drop rows for a model label (repeatable), e.g. --exclude-model Gemini-3.5-Flash",
+    )
     args = parser.parse_args()
-    merge_runs(args.runs_root, args.out, args.label, args.dataset_version)
+    merge_runs(args.runs_root, args.out, args.label, args.dataset_version, args.exclude_model)

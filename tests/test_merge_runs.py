@@ -2,7 +2,7 @@ import csv
 import json
 import os
 
-from scripts.merge_runs import load_runs, merge_rows
+from scripts.merge_runs import load_runs, merge_rows, merge_runs
 
 
 def make_run(runs_root, run_id, created_at, label, dataset_version, rows):
@@ -105,3 +105,18 @@ def test_mixed_dataset_versions_do_not_collide(tmp_path):
     assert len(merged) == 2
     assert any("mixed dataset versions" in w for w in warnings)
     assert {r["dataset_version"] for r in merged} == {"v1.0.0", "v2.0.0"}
+
+
+def test_exclude_model_drops_rows(tmp_path):
+    root = str(tmp_path / "runs")
+    make_run(root, "run-20260918T010000Z", "2026-09-18T01:00:00+00:00", "real", "v2.0.0", [
+        row("M1", "T1", "4.0", "True"),
+        row("M2", "T1", "5.0", "True"),
+    ])
+
+    out_dir = str(tmp_path / "out")
+    merge_runs(root, out_dir, label="real", dataset_version=None, exclude_models=["M2"])
+
+    with open(os.path.join(out_dir, "merged_scores.csv"), encoding="utf-8") as f:
+        merged = list(csv.DictReader(f))
+    assert {r["model"] for r in merged} == {"M1"}

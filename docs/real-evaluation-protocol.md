@@ -21,8 +21,11 @@ Recommended pilot:
 - 2 attempts per case
 - 2 judge models
 
-The default configuration uses Groq and Gemini. OpenRouter is optional and is
-not required for the benchmark.
+The default configuration uses Groq only. OpenRouter is optional and is
+not required for the benchmark. A Gemini pilot validated multi-provider
+support, but Gemini's free tier was reduced to 20 requests/day, so it is
+excluded from the main benchmark; do not mix providers across cases in a
+single comparable run.
 
 Review rate limits, failures, latency, and estimated cost before expanding.
 
@@ -48,9 +51,9 @@ Example 50-case Groq batch:
   -Attempts 1
 ```
 
-The next batches use offsets `50`, `100`, and `150`. Gemini can be run in the
-same way with `-Config configs/models_gemini.json`. Preserve each run directory
-and compare them using their manifests.
+The next batches use offsets `50`, `100`, and `150`. Per-provider
+configuration files can be used the same way when quota requires isolating a
+model. Preserve each run directory and compare them using their manifests.
 
 The run creates a new directory under `results/runs/` and records:
 

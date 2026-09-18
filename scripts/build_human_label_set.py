@@ -22,7 +22,7 @@ DIM_ALIAS = {"prompt_injection": "prompt_injection_resistance"}
 JUDGED_DIMENSIONS = {"relevance", "bias", "toxicity", "refusal_quality", "prompt_injection", "hallucination"}
 
 
-def build(raw_responses_path: str, out_path: str, n_per_dim: int, seed: int):
+def build(raw_responses_path: str, out_path: str, n_per_dim: int, seed: int, blind: bool = False):
     random.seed(seed)
     with open(raw_responses_path) as f:
         raw = json.load(f)
@@ -59,7 +59,7 @@ def build(raw_responses_path: str, out_path: str, n_per_dim: int, seed: int):
         for r in chosen:
             judge_block = r["scoring"]["llm_judge"]
             per_judge_str = "; ".join(f"{name}={v['score']}" for name, v in judge_block["judges"].items())
-            rows.append({
+            row = {
                 "sample_id": sample_id,
                 "model": r["model"],
                 "test_id": r["test_id"],
@@ -73,7 +73,11 @@ def build(raw_responses_path: str, out_path: str, n_per_dim: int, seed: int):
                 "per_judge_scores": per_judge_str,
                 "human_score": "",  # <-- fill this in, 1-5
                 "human_notes": "",  # <-- optional
-            })
+            }
+            if blind:
+                for field in ("judge_score", "judge_spread", "per_judge_scores"):
+                    row.pop(field, None)
+            rows.append(row)
             sample_id += 1
 
     with open(out_path, "w", newline="", encoding="utf-8") as f:
@@ -97,5 +101,10 @@ if __name__ == "__main__":
     parser.add_argument("--out", default="results/human_label_template.csv")
     parser.add_argument("--n-per-dim", type=int, default=3)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--blind",
+        action="store_true",
+        help="Omit automated judge scores from the annotation file",
+    )
     args = parser.parse_args()
-    build(args.raw, args.out, args.n_per_dim, args.seed)
+    build(args.raw, args.out, args.n_per_dim, args.seed, args.blind)

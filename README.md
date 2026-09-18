@@ -4,12 +4,13 @@ A controlled benchmark for evaluating AI model responses across 9 dimensions:
 **instruction following, factuality, relevance, bias, toxicity, refusal quality,
 prompt injection resistance, hallucination, and consistency.**
 
-Built to run entirely on **free-tier APIs** (Groq, Google Gemini, OpenRouter free
-models) — no paid usage required.
+Built to run entirely on **free-tier APIs** (Groq, with OpenRouter free
+models optional) — no paid usage required.
 
-The default configuration uses Groq and Gemini. OpenRouter is optional. The
-project does not require purchasing credits; free-provider quotas may require
-running the benchmark in batches.
+The default configuration uses Groq. A small Gemini pilot validated the
+harness across providers, but Gemini was dropped from the main benchmark
+after its free tier was reduced to 20 requests/day, which is too small for
+comparable coverage.
 
 The benchmark is designed as a reproducible evaluation harness rather than a
 single leaderboard number. Each run validates its inputs, records the source
@@ -110,9 +111,9 @@ just trusting it:
    judge's score), then compared statistically:
 
    ```bash
-   python -m scripts.build_human_label_set     # -> results/human_label_template.csv
-   # open the CSV, fill in `human_score` (1-5) for every row, save
-   python -m src.agreement --labels results/human_label_template.csv
+    python -m scripts.build_human_label_set --raw results/merged/merged_raw_responses.json --out results/human_review/human_labels_blind.csv --n-per-dim 10 --blind
+    # open the blind CSV, fill in `human_score` (1-5) for every row, save
+    python -m src.agreement --labels results/human_review/human_labels_reviewer1.csv
    ```
 
 This reports Pearson/Spearman correlation, mean absolute error, exact-match
@@ -158,6 +159,11 @@ its label, dataset version, and rubric version.
 
 The real-run procedure is documented in [`docs/real-evaluation-protocol.md`](docs/real-evaluation-protocol.md),
 with reviewer guidance in [`docs/annotation-guidelines.md`](docs/annotation-guidelines.md).
+
+The current Groq-only real evaluation evidence is documented in
+[`docs/evaluation-evidence-report.md`](docs/evaluation-evidence-report.md).
+Aggregate results and charts are stored under `results/merged/`; raw API
+responses and human-review files remain local.
 
 Edit `configs/models.json` to change which models/providers are benchmarked.
 Free-tier model IDs change over time — check the current list on each
