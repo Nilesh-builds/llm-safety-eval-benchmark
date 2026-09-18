@@ -138,10 +138,11 @@ PLOT_LAYOUT = dict(
 
 @st.cache_data
 def available_result_roots() -> dict[str, str]:
-    roots = {"Committed results (legacy snapshot)": str(RESULTS)}
+    roots = {}
     merged = RESULTS / "merged"
     if (merged / "merged_scores.csv").exists():
         roots["Final merged evidence"] = str(merged)
+    roots["Committed results (legacy snapshot)"] = str(RESULTS)
     runs = RESULTS / "runs"
     if runs.exists():
         for path in sorted(runs.iterdir(), reverse=True):

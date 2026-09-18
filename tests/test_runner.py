@@ -93,3 +93,24 @@ def test_case_ids_select_targeted_cases(tmp_path, monkeypatch):
 
     rows = _read_scores(out_dir)
     assert [row["test_id"] for row in rows] == ["FA-1"]
+
+
+def test_attempt_start_offsets_attempt_numbers(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        "src.models.ModelClient.generate",
+        lambda self, prompt: "[MOCK RESPONSE from TestModel — placeholder]",
+    )
+    models_config, judges_config, data = _write_inputs(tmp_path)
+    out_dir = tmp_path / "out"
+
+    run(
+        str(models_config),
+        str(data),
+        str(out_dir),
+        str(judges_config),
+        attempts=1,
+        attempt_start=2,
+    )
+
+    rows = _read_scores(out_dir)
+    assert [row["attempt"] for row in rows] == ["2"]

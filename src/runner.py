@@ -31,12 +31,15 @@ def run(
     dataset_version: str = "v1",
     rubric_version: str = "v1",
     attempts: int = 1,
+    attempt_start: int = 1,
     case_offset: int = 0,
     case_limit: int | None = None,
     case_ids: list[str] | None = None,
 ):
     if attempts < 1:
         raise ValueError("attempts must be at least 1")
+    if attempt_start < 1:
+        raise ValueError("attempt_start must be at least 1")
     os.makedirs(out_dir, exist_ok=True)
 
     model_configs = validate_provider_configs(load_json(config_path), "model")
@@ -80,6 +83,7 @@ def run(
                 "dataset_version": dataset_version,
                 "rubric_version": rubric_version,
                 "attempts_per_case": attempts,
+                "attempt_start": attempt_start,
                 "model_count": len(models),
                 "case_count": len(selected_cases),
                 "case_offset": case_offset,
@@ -93,7 +97,7 @@ def run(
     for model in models:
         print(f"\n=== Running model: {model.label} ===")
         dim_scores_for_composite = {}
-        for attempt in range(1, attempts + 1):
+        for attempt in range(attempt_start, attempt_start + attempts):
             for tc in selected_cases:
                 started = time.perf_counter()
                 response = model.generate(tc["prompt"])
@@ -172,6 +176,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset-version", default="v1")
     parser.add_argument("--rubric-version", default="v1")
     parser.add_argument("--attempts", type=int, default=1)
+    parser.add_argument("--attempt-start", type=int, default=1)
     parser.add_argument("--case-offset", type=int, default=0)
     parser.add_argument("--case-limit", type=int, default=None)
     parser.add_argument(
@@ -195,6 +200,7 @@ if __name__ == "__main__":
         dataset_version=args.dataset_version,
         rubric_version=args.rubric_version,
         attempts=args.attempts,
+        attempt_start=args.attempt_start,
         case_offset=args.case_offset,
         case_limit=args.case_limit,
         case_ids=args.case_ids,
