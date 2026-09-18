@@ -50,7 +50,7 @@ st.markdown(
         background: {CARD_BG};
         border: 1px solid {CARD_BORDER};
         border-radius: 14px;
-        padding: 18px 20px;
+        padding: 10px 14px;
         backdrop-filter: blur(8px);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     }}
@@ -77,17 +77,17 @@ st.markdown(
     }}
 
     .hero {{
-        padding: 28px 32px;
-        border-radius: 18px;
+        padding: 14px 24px;
+        border-radius: 14px;
         background: linear-gradient(120deg, rgba(108,99,255,0.22), rgba(0,212,170,0.14));
         border: 1px solid {CARD_BORDER};
-        margin-bottom: 8px;
+        margin-bottom: 4px;
     }}
     .hero h1 {{
-        font-size: 2.1rem;
+        font-size: 1.5rem;
         font-weight: 800;
         letter-spacing: -0.5px;
-        margin: 0 0 6px 0;
+        margin: 0 0 4px 0;
         background: linear-gradient(90deg, #FFFFFF, #B9B4FF);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -95,10 +95,10 @@ st.markdown(
     .hero p {{ color: {TEXT_MUTED} !important; margin: 0; }}
     .badge {{
         display: inline-block;
-        margin: 10px 8px 0 0;
-        padding: 5px 12px;
+        margin: 4px 6px 0 0;
+        padding: 3px 10px;
         border-radius: 999px;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 600;
         color: #E8ECF8;
         background: rgba(108, 99, 255, 0.25);
@@ -112,12 +112,12 @@ st.markdown(
         background: {CARD_BG};
         border: 1px solid {CARD_BORDER};
         border-radius: 14px;
-        padding: 18px 20px;
-        margin-top: 14px;
+        padding: 12px 16px;
+        margin-top: 8px;
     }}
     .footer {{
-        margin-top: 28px;
-        padding-top: 14px;
+        margin-top: 14px;
+        padding-top: 8px;
         border-top: 1px solid {CARD_BORDER};
         color: {TEXT_MUTED} !important;
         font-size: 0.78rem;
@@ -132,7 +132,8 @@ PLOT_LAYOUT = dict(
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
     font=dict(color="#D7DDF0"),
-    margin=dict(l=20, r=20, t=50, b=20),
+    margin=dict(l=20, r=20, t=40, b=20),
+    height=280,
 )
 
 
@@ -312,31 +313,19 @@ with tab_dimensions:
         yaxis=dict(range=[0, 5.6], gridcolor="rgba(255,255,255,0.08)"),
     )
     st.plotly_chart(fig, width="stretch")
-    st.dataframe(
-        detail[["dimension", "n", "mean", "ci_lower", "ci_upper"]].style.format(
-            {"mean": "{:.2f}", "ci_lower": "{:.2f}", "ci_upper": "{:.2f}"}
-        ),
-        width="stretch",
-        hide_index=True,
-    )
     st.caption(f"Rows used for this model: {len(model_scores):,}")
 
 with tab_reliability:
     invalid = scores.get("invalid_judges", pd.Series(dtype=float))
     col_one, col_two = st.columns(2)
     with col_one:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.subheader("Run reliability signals")
-        if len(invalid):
-            st.metric("Rows with invalid judge calls", int((invalid > 0).sum()))
-        else:
-            st.info("This result file predates invalid-judge telemetry.")
+        st.subheader("Run reliability")
         errors = scores.get("response_status")
         if errors is not None:
             st.metric("Failed responses", int((errors == "error").sum()))
-        st.markdown("</div>", unsafe_allow_html=True)
+        if len(invalid):
+            st.metric("Invalid judge calls", int((invalid > 0).sum()))
     with col_two:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
         st.subheader("Human reviewer agreement")
         if agreement:
             a, b, c = st.columns(3)
@@ -344,16 +333,10 @@ with tab_reliability:
             b.metric("Exact match", f"{agreement['exact_match']:.1%}")
             c.metric("Within 1 point", f"{agreement['within_1']:.1%}")
             st.caption(
-                f"Two independent reviewers blind to judge scores; n={agreement['n']}. "
-                "Human agreement validates the judge, it is not a model score."
+                f"n={agreement['n']} blind double-reviewed samples."
             )
         else:
             st.write("Human agreement is kept separate from model performance.")
-        st.markdown("</div>", unsafe_allow_html=True)
-    st.warning(
-        "The current benchmark is a methodology demonstration. Small test sets "
-        "should not be used to make deployment decisions."
-    )
 
 st.markdown(
     """

@@ -7,25 +7,25 @@
 - Rubric version: `v1.0.0`
 - Providers: Groq
 - Models: Groq GPT-OSS-20B and Groq GPT-OSS-120B
-- Attempts per case: 1
+- Attempts per case: 2 (80.5% of attempt-2 pairs recovered; 78 pairs rate-limited on Groq free tier)
 - Source runs represented after deduplication: 9
 - Collection date: 2026-09-18
 
 ## Coverage
 
-- Total model responses: 400
+- Total model responses: 800 (400 attempt-1 + 400 attempt-2)
 - Cases: 200 per model
 - Cases per dimension: 22 for most dimensions; 23 for prompt injection and refusal quality
-- Judge calls: 800 (two judge models per response)
-- Failed responses: 0
+- Judge calls: 1600 (two judge models per response)
+- Failed responses: 78 attempt-2 pairs rate-limited (120B model hit free-tier quota ceiling)
 - Invalid judge outputs: 0
 
 ## Results
 
 | Model | Composite | Key strengths | Weakest dimensions |
 |---|---:|---|---|
-| Groq GPT-OSS-120B | 4.334 | toxicity 5.00, relevance 4.86, factuality 4.82 | hallucination 3.00, refusal quality 3.57 |
-| Groq GPT-OSS-20B | 4.182 | toxicity 5.00, relevance 4.82, factuality 4.64 | hallucination 3.00, refusal quality 3.52 |
+| Groq GPT-OSS-120B | 4.280 | factuality 4.82, relevance 4.84, bias 4.66 | hallucination 3.12, refusal quality 3.35 |
+| Groq GPT-OSS-20B | 4.183 | factuality 4.64, relevance 4.77, instruction following 4.55 | hallucination 3.32, refusal quality 3.36 |
 
 The complete per-dimension means and 95% bootstrap intervals are in
 `results/merged/uncertainty.csv`. The comparison charts are
@@ -58,6 +58,8 @@ hallucination and refusal quality. These results support a comparative
 benchmark finding for this dataset and rubric. They do not establish general
 model safety, production reliability, or superiority outside this test set.
 
-The evaluation used one attempt per case and free-tier API access. The human
-sample covers six semantic dimensions and is not a full review of all 400
-model responses. Results may also reflect shared judge-model blind spots.
+The evaluation used up to 2 attempts per case and free-tier API access.
+78 of 400 attempt-2 pairs were rate-limited by Groq's free-tier quota ceiling,
+all on the 120B model. The human sample covers six semantic dimensions and is
+not a full review of all 800 model responses. Results may also reflect shared
+judge-model blind spots.

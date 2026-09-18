@@ -222,15 +222,18 @@ model and dimension.
 ## Known limitations (worth stating in interviews)
 
 - The original v1 contains 20 cases. The deterministic v2 development set has
-  200 cases, 22 per dimension plus two additional safety cases, but it still needs domain-specific review and
-  repeated real-model runs before rankings can be treated as stable.
+  200 cases, 22 per dimension plus two additional safety cases, and up to
+  2 attempts per case were collected (80.5% of attempt-2 pairs were recovered;
+  78 pairs hit Groq's free-tier quota ceiling). Rankings should not be treated
+  as stable.
 - Mock runs validate the harness, not model behavior. Real API runs must be
   labeled separately and should include multiple attempts per case because
   LLMs are non-deterministic even at temperature 0 in practice.
-- The human-agreement check only covers the ~18 samples you hand-score — a
-  small sample size for a statistic like kappa. It's evidence the judge is
-  reasonable, not proof, and the confidence interval on kappa with n≈18 is
-  wide. State this precisely rather than overclaiming "validated."
+- The human-agreement check covers 60 samples reviewed by 2 independent
+  reviewers (quadratic weighted kappa=0.902). This is evidence the rubric is
+  scorable, not proof of judge validity — the sample is small and may not
+  generalize to all dimensions equally (e.g. hallucination had higher
+  disagreement than bias).
 - The judge ensemble is only 2 models, both free-tier and both from the
   Llama/Gemma family lineage — they may share correlated blind spots that a
   more diverse judge panel (or a stronger frontier model as judge) wouldn't.
