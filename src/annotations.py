@@ -28,7 +28,7 @@ def load_annotation_rows(path: str | Path, allow_blank: bool = True) -> list[dic
         rows = []
         seen = set()
         for line_number, row in enumerate(reader, start=2):
-            key = (row["model"], row["test_id"])
+            key = (row["model"], row["test_id"], row.get("attempt", "1"))
             if key in seen:
                 raise ValueError(f"Duplicate annotation sample at line {line_number}: {key}")
             seen.add(key)

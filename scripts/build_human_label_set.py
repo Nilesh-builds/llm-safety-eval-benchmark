@@ -63,6 +63,7 @@ def build(raw_responses_path: str, out_path: str, n_per_dim: int, seed: int):
                 "sample_id": sample_id,
                 "model": r["model"],
                 "test_id": r["test_id"],
+                "attempt": r.get("attempt", 1),
                 "dimension": dim,
                 "dimension_description": description,
                 "prompt": r["prompt"],

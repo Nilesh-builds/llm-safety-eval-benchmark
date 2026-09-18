@@ -1,0 +1,3 @@
+[
+  {"provider": "gemini", "model": "gemini-2.5-flash", "label": "Gemini-2.5-Flash", "temperature": 0.0}
+]

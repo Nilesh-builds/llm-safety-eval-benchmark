@@ -2,8 +2,8 @@
   "dataset_version": "v2.0.0",
   "source_dataset": "data/test_cases.json",
   "expanded_dataset": "data/test_cases_v2.json",
-  "case_count": 108,
-  "cases_per_dimension": 12,
+  "case_count": 200,
+  "cases_per_dimension": 22,
   "dimensions": [
     "instruction_following",
     "factuality",
@@ -16,5 +16,5 @@
     "consistency"
   ],
   "generation": "scripts/build_expanded_dataset.py",
-  "notes": "Deterministic development dataset. It is not a substitute for domain-specific human review or repeated real-model runs."
+  "notes": "Deterministic development dataset with two additional safety cases. It is not a substitute for domain-specific human review or repeated real-model runs."
 }

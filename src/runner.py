@@ -30,11 +30,23 @@ def run(
     run_label: str = "development",
     dataset_version: str = "v1",
     rubric_version: str = "v1",
+    attempts: int = 1,
+    case_offset: int = 0,
+    case_limit: int | None = None,
 ):
+    if attempts < 1:
+        raise ValueError("attempts must be at least 1")
     os.makedirs(out_dir, exist_ok=True)
 
     model_configs = validate_provider_configs(load_json(config_path), "model")
     test_cases = validate_test_cases(load_json(data_path))
+    if case_offset < 0 or case_offset >= len(test_cases):
+        raise ValueError("case_offset must be within the dataset")
+    selected_cases = test_cases[case_offset:]
+    if case_limit is not None:
+        if case_limit < 1:
+            raise ValueError("case_limit must be at least 1")
+        selected_cases = selected_cases[:case_limit]
 
     models = load_models_from_config(model_configs)
 
@@ -58,6 +70,12 @@ def run(
                 "run_label": run_label,
                 "dataset_version": dataset_version,
                 "rubric_version": rubric_version,
+                "attempts_per_case": attempts,
+                "model_count": len(models),
+                "case_count": len(selected_cases),
+                "case_offset": case_offset,
+                "total_dataset_cases": len(test_cases),
+                "judge_count": len(judge_clients),
             },
         ),
         os.path.join(out_dir, "run_manifest.json"),
@@ -66,43 +84,52 @@ def run(
     for model in models:
         print(f"\n=== Running model: {model.label} ===")
         dim_scores_for_composite = {}
-        for tc in test_cases:
-            started = time.perf_counter()
-            response = model.generate(tc["prompt"])
-            latency_ms = round((time.perf_counter() - started) * 1000, 2)
-            scoring = score_test_case(tc, response, judge_clients=judge_clients)
-            response_status = (
-                "error" if response.startswith("[ERROR after")
-                else "mock" if response.startswith("[MOCK RESPONSE")
-                else "ok"
-            )
+        for attempt in range(1, attempts + 1):
+            for tc in selected_cases:
+                started = time.perf_counter()
+                response = model.generate(tc["prompt"])
+                latency_ms = round((time.perf_counter() - started) * 1000, 2)
+                response_status = (
+                    "error" if response.startswith("[ERROR after")
+                    else "mock" if response.startswith("[MOCK RESPONSE")
+                    else "ok"
+                )
+                if response_status == "error":
+                    scoring = {"final_score": None, "llm_judge": {"invalid_judges": 0}}
+                else:
+                    scoring = score_test_case(tc, response, judge_clients=judge_clients)
 
-            raw_responses.append({
-                "model": model.label,
-                "test_id": tc["id"],
-                "dimension": tc["dimension"],
-                "prompt": tc["prompt"],
-                "response": response,
-                "latency_ms": latency_ms,
-                "response_status": response_status,
-                "scoring": scoring,
-            })
+                raw_responses.append({
+                    "model": model.label,
+                    "test_id": tc["id"],
+                    "attempt": attempt,
+                    "dimension": tc["dimension"],
+                    "prompt": tc["prompt"],
+                    "response": response,
+                    "latency_ms": latency_ms,
+                    "response_status": response_status,
+                    "scoring": scoring,
+                })
 
-            dim_key = DIM_ALIAS.get(tc["dimension"], tc["dimension"])
-            if scoring["final_score"] is not None:
-                dim_scores_for_composite.setdefault(dim_key, []).append(scoring["final_score"])
+                dim_key = DIM_ALIAS.get(tc["dimension"], tc["dimension"])
+                if scoring["final_score"] is not None:
+                    dim_scores_for_composite.setdefault(dim_key, []).append(scoring["final_score"])
 
-            score_rows.append({
-                "model": model.label,
-                "test_id": tc["id"],
-                "dimension": tc["dimension"],
-                "final_score": scoring["final_score"],
-                "valid_score": scoring["final_score"] is not None,
-                "invalid_judges": scoring.get("llm_judge", {}).get("invalid_judges", 0),
-                "latency_ms": latency_ms,
-                "response_status": response_status,
-            })
-            print(f"  {tc['id']:6s} [{tc['dimension']:22s}] score={scoring['final_score']}")
+                score_rows.append({
+                    "model": model.label,
+                    "test_id": tc["id"],
+                    "attempt": attempt,
+                    "dimension": tc["dimension"],
+                    "final_score": scoring["final_score"],
+                    "valid_score": scoring["final_score"] is not None,
+                    "invalid_judges": scoring.get("llm_judge", {}).get("invalid_judges", 0),
+                    "latency_ms": latency_ms,
+                    "response_status": response_status,
+                })
+                print(
+                    f"  {tc['id']:10s} attempt={attempt} "
+                    f"[{tc['dimension']:22s}] score={scoring['final_score']}"
+                )
 
         # per-model composite (average each dimension first, then weight)
         avg_by_dim = {d: sum(s) / len(s) for d, s in dim_scores_for_composite.items()}
@@ -117,7 +144,7 @@ def run(
             f,
             fieldnames=[
                 "model", "test_id", "dimension", "final_score", "valid_score",
-                "invalid_judges", "latency_ms", "response_status",
+                "attempt", "invalid_judges", "latency_ms", "response_status",
             ],
         )
         writer.writeheader()
@@ -135,6 +162,9 @@ if __name__ == "__main__":
     parser.add_argument("--label", choices=["mock", "development", "real"], default="development")
     parser.add_argument("--dataset-version", default="v1")
     parser.add_argument("--rubric-version", default="v1")
+    parser.add_argument("--attempts", type=int, default=1)
+    parser.add_argument("--case-offset", type=int, default=0)
+    parser.add_argument("--case-limit", type=int, default=None)
     args = parser.parse_args()
     output = args.out
     if output is None:
@@ -148,4 +178,7 @@ if __name__ == "__main__":
         run_label=args.label,
         dataset_version=args.dataset_version,
         rubric_version=args.rubric_version,
+        attempts=args.attempts,
+        case_offset=args.case_offset,
+        case_limit=args.case_limit,
     )

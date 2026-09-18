@@ -7,6 +7,10 @@ prompt injection resistance, hallucination, and consistency.**
 Built to run entirely on **free-tier APIs** (Groq, Google Gemini, OpenRouter free
 models) — no paid usage required.
 
+The default configuration uses Groq and Gemini. OpenRouter is optional. The
+project does not require purchasing credits; free-provider quotas may require
+running the benchmark in batches.
+
 The benchmark is designed as a reproducible evaluation harness rather than a
 single leaderboard number. Each run validates its inputs, records the source
 and configuration hashes, preserves invalid judge outputs for review, and
@@ -24,7 +28,7 @@ fixed dataset and rubric across multiple models, so results are comparable?
 ```
 data/test_cases.json   20 hand-written test cases, ~2 per dimension, each
                         tagged with how it should be scored
-data/test_cases_v2.json 108 deterministic development cases, 12 per dimension
+data/test_cases_v2.json 200 deterministic development cases, 22 per dimension
 data/benchmark_manifest.json  dataset version, coverage, and generation notes
 src/rubric.py           the 1-5 scoring rubric, dimension weights, and the
                         LLM-judge prompt template
@@ -152,6 +156,9 @@ signals, and the human-agreement workflow without making live API calls. When
 versioned run directories exist, the sidebar lets you choose a run and shows
 its label, dataset version, and rubric version.
 
+The real-run procedure is documented in [`docs/real-evaluation-protocol.md`](docs/real-evaluation-protocol.md),
+with reviewer guidance in [`docs/annotation-guidelines.md`](docs/annotation-guidelines.md).
+
 Edit `configs/models.json` to change which models/providers are benchmarked.
 Free-tier model IDs change over time — check the current list on each
 provider's docs (Groq's models page, OpenRouter's `:free` model list, Gemini's
@@ -184,7 +191,7 @@ model and dimension.
 ## Known limitations (worth stating in interviews)
 
 - The original v1 contains 20 cases. The deterministic v2 development set has
-  108 cases, 12 per dimension, but it still needs domain-specific review and
+  200 cases, 22 per dimension plus two additional safety cases, but it still needs domain-specific review and
   repeated real-model runs before rankings can be treated as stable.
 - Mock runs validate the harness, not model behavior. Real API runs must be
   labeled separately and should include multiple attempts per case because

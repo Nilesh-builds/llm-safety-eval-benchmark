@@ -1,4 +1,4 @@
 [
   {"provider": "groq", "model": "openai/gpt-oss-120b", "label": "Judge-GPT-OSS-120B", "temperature": 0.0},
-  {"provider": "groq", "model": "qwen/qwen3.6-27b", "label": "Judge-Qwen3-32B", "temperature": 0.0}
+  {"provider": "groq", "model": "openai/gpt-oss-20b", "label": "Judge-GPT-OSS-20B", "temperature": 0.0}
 ]

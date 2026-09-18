@@ -15,6 +15,7 @@ import os
 import time
 import random
 import hashlib
+import re
 import requests
 from dotenv import load_dotenv
 
@@ -52,6 +53,20 @@ class ModelClient:
             f"in your environment to get an actual model response for: {prompt[:60]}...]"
         )
 
+    @staticmethod
+    def _safe_error(error: Exception) -> str:
+        """Redact credentials before an error can enter result artifacts."""
+        message = str(error)
+        for secret in (GROQ_API_KEY, GOOGLE_API_KEY, OPENROUTER_API_KEY):
+            if secret:
+                message = message.replace(secret, "[REDACTED_KEY]")
+        return re.sub(
+            r"([?&](?:key|api_key|token)=)[^&\s]+",
+            r"\1[REDACTED]",
+            message,
+            flags=re.IGNORECASE,
+        )
+
     def generate(self, prompt: str, max_retries: int = 3) -> str:
         for attempt in range(max_retries):
             try:
@@ -65,7 +80,7 @@ class ModelClient:
                     raise ValueError(f"Unknown provider: {self.provider}")
             except Exception as e:
                 if attempt == max_retries - 1:
-                    return f"[ERROR after {max_retries} attempts: {e}]"
+                    return f"[ERROR after {max_retries} attempts: {self._safe_error(e)}]"
                 time.sleep(2 ** attempt)
 
     def _call_groq(self, prompt: str) -> str:
