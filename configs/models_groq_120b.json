@@ -1,0 +1,3 @@
+[
+  {"provider": "groq", "model": "openai/gpt-oss-120b", "label": "Groq-GPT-OSS-120B", "temperature": 0.0}
+]
