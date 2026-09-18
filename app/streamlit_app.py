@@ -2,14 +2,17 @@
 
 from pathlib import Path
 import json
+import sys
 
 import pandas as pd
 import streamlit as st
 
-from src.statistics import bootstrap_mean_ci
-
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "results"
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from src.statistics import bootstrap_mean_ci
 
 st.set_page_config(page_title="LLM Evaluation Evidence", layout="wide")
 
@@ -17,6 +20,9 @@ st.set_page_config(page_title="LLM Evaluation Evidence", layout="wide")
 @st.cache_data
 def available_result_roots() -> dict[str, str]:
     roots = {"Committed results (legacy snapshot)": str(RESULTS)}
+    merged = RESULTS / "merged"
+    if (merged / "merged_scores.csv").exists():
+        roots["Final merged evidence"] = str(merged)
     runs = RESULTS / "runs"
     if runs.exists():
         for path in sorted(runs.iterdir(), reverse=True):
@@ -27,7 +33,11 @@ def available_result_roots() -> dict[str, str]:
 
 @st.cache_data
 def load_scores(result_root: str) -> pd.DataFrame:
-    scores = pd.read_csv(Path(result_root) / "scores.csv")
+    root = Path(result_root)
+    score_path = root / "scores.csv"
+    if not score_path.exists():
+        score_path = root / "merged_scores.csv"
+    scores = pd.read_csv(score_path)
     if "valid_score" in scores.columns:
         scores = scores[scores["valid_score"] != False].copy()  # noqa: E712
     scores["final_score"] = pd.to_numeric(scores["final_score"], errors="coerce")
@@ -126,11 +136,20 @@ with tab_reliability:
         st.metric("Rows with invalid judge calls", int((invalid > 0).sum()))
     else:
         st.info("This result file predates invalid-judge telemetry.")
-    st.write(
-        "Human agreement is intentionally kept separate from model performance. "
-        "Use the agreement command after completing the blind annotation template."
-    )
-    st.code("python -m src.agreement --labels results/human_label_template.csv")
+    reviewer_agreement = RESULTS / "merged" / "reviewer_agreement.json"
+    if not reviewer_agreement.exists():
+        reviewer_agreement = RESULTS / "human_review" / "reviewer_agreement.json"
+    if reviewer_agreement.exists():
+        agreement = json.loads(reviewer_agreement.read_text(encoding="utf-8"))
+        st.subheader("Human reviewer agreement")
+        a, b, c = st.columns(3)
+        a.metric("Quadratic weighted kappa", f"{agreement['quadratic_weighted_kappa']:.3f}")
+        b.metric("Exact match", f"{agreement['exact_match']:.1%}")
+        c.metric("Within 1 point", f"{agreement['within_1']:.1%}")
+        st.caption(f"Two independent reviewers; n={agreement['n']}")
+    else:
+        st.write("Human agreement is kept separate from model performance.")
+    st.code("streamlit run app/streamlit_app.py")
     st.warning(
         "The current benchmark is a methodology demonstration. Small test sets "
         "should not be used to make deployment decisions."

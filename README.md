@@ -112,7 +112,9 @@ just trusting it:
 
    ```bash
     python -m scripts.build_human_label_set --raw results/merged/merged_raw_responses.json --out results/human_review/human_labels_blind.csv --n-per-dim 10 --blind
-    # open the blind CSV, fill in `human_score` (1-5) for every row, save
+    python -m scripts.build_human_review_xlsx --csv results/human_review/human_labels_blind.csv --out results/human_review/human_labels_blind.xlsx
+    # reviewers fill in `human_score` (1-5) independently, then prepare analysis CSVs
+    python -m scripts.prepare_human_labels --blind results/human_review/human_labels_analysis_template.csv --workbook results/human_review/human_labels_reviewer1.xlsx --out results/human_review/human_labels_reviewer1.csv
     python -m src.agreement --labels results/human_review/human_labels_reviewer1.csv
    ```
 
@@ -145,6 +147,21 @@ jupyter notebook notebooks/01_exploration.ipynb   # walk-through + interpretatio
 ```
 
 ## Review the results
+
+### Streamlit dashboard
+
+Dashboard source: [`app/streamlit_app.py`](app/streamlit_app.py)
+
+Run it locally from the repository root:
+
+```bash
+streamlit run app/streamlit_app.py
+```
+
+To publish it with Streamlit Community Cloud, create a new app from this
+repository, select branch `main`, and set the main file to
+`app/streamlit_app.py`. The dashboard is read-only and uses the committed
+aggregate results, so no API key or paid service is required.
 
 After a benchmark run, start the read-only dashboard:
 

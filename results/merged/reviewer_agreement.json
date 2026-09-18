@@ -1,0 +1,9 @@
+{
+  "n": 60,
+  "pearson_r": 0.9267858438,
+  "spearman_rho": 0.8769039318,
+  "mean_absolute_error": 0.3666666667,
+  "exact_match": 0.6333333333,
+  "within_1": 1.0,
+  "quadratic_weighted_kappa": 0.9016246833
+}

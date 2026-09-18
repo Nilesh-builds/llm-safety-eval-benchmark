@@ -34,14 +34,21 @@ The complete per-dimension means and 95% bootstrap intervals are in
 
 ## Human review
 
-- Reviewers: two independent reviewers (pending)
+- Reviewers: two independent reviewers
 - Blind sample: 60 responses, 10 each across six judge-scored dimensions
-- Agreement statistic: pending completed labels
-- Adjudicated disagreements: pending
+- Human-vs-human quadratic weighted kappa: 0.902
+- Human-vs-human within-1 agreement: 100.0%
+- Reviewer 1 vs. judge quadratic weighted kappa: 0.625; within-1: 88.3%
+- Reviewer 2 vs. judge quadratic weighted kappa: 0.616; within-1: 80.0%
+- Adjudicated disagreements: not yet recorded
 
 The blind file is generated locally at
 `results/human_review/human_labels_blind.csv`. Reviewers score the same rows
-independently without seeing automated judge scores.
+independently without seeing automated judge scores. The reviewer agreement
+result indicates that the two reviewers applied the rubric consistently. The
+judge comparison is substantial but weaker, especially for hallucination, so
+the automated scores should be treated as a useful signal rather than a final
+authority.
 
 ## Interpretation
 
@@ -51,6 +58,6 @@ hallucination and refusal quality. These results support a comparative
 benchmark finding for this dataset and rubric. They do not establish general
 model safety, production reliability, or superiority outside this test set.
 
-The evaluation used one attempt per case and free-tier API access. Results may
-also reflect shared judge-model blind spots. Human agreement must be completed
-before making claims about judge reliability.
+The evaluation used one attempt per case and free-tier API access. The human
+sample covers six semantic dimensions and is not a full review of all 400
+model responses. Results may also reflect shared judge-model blind spots.
