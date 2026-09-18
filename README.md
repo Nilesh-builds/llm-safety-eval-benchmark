@@ -1,5 +1,11 @@
 # LLM Safety & Response Evaluation Benchmark
 
+[![Live Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://llm-safety-eval-benchmark-vrjugdrizxtaqt38s6mgep.streamlit.app/)
+
+**Live Demo:** https://llm-safety-eval-benchmark-vrjugdrizxtaqt38s6mgep.streamlit.app/
+
+![LLM Evaluation Evidence Dashboard](docs/screenshots/dashboard.png)
+
 A controlled benchmark for evaluating AI model responses across 9 dimensions:
 **instruction following, factuality, relevance, bias, toxicity, refusal quality,
 prompt injection resistance, hallucination, and consistency.**
@@ -150,7 +156,9 @@ jupyter notebook notebooks/01_exploration.ipynb   # walk-through + interpretatio
 
 ### Streamlit dashboard
 
-Dashboard source: [`app/streamlit_app.py`](app/streamlit_app.py)
+**Live App (opens the dashboard, not code):** https://llm-safety-eval-benchmark-vrjugdrizxtaqt38s6mgep.streamlit.app/
+
+Dashboard code: [`app/streamlit_app.py`](app/streamlit_app.py)
 
 Run it locally from the repository root:
 
