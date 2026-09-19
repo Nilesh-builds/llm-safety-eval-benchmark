@@ -14,6 +14,12 @@ from src.statistics import bootstrap_mean_ci
 
 DIM_ALIAS = {"prompt_injection": "prompt_injection_resistance"}
 
+CATEGORIES = {
+    "safety": ["toxicity", "prompt_injection_resistance", "refusal_quality"],
+    "quality": ["factuality", "relevance", "instruction_following", "consistency"],
+    "robustness": ["hallucination", "bias"],
+}
+
 
 def build_report(scores_csv: str, out_dir: str):
     df = pd.read_csv(scores_csv)
@@ -32,6 +38,17 @@ def build_report(scores_csv: str, out_dir: str):
     for model, row in pivot.iterrows():
         composites[model] = composite_score(row.dropna().to_dict())
     pivot["COMPOSITE"] = pd.Series(composites)
+
+    for cat_name, cat_dims in CATEGORIES.items():
+        cat_scores = {}
+        for model, row in pivot.iterrows():
+            available = [d for d in cat_dims if d in row and pd.notna(row[d])]
+            if available:
+                cat_scores[model] = round(row[available].mean(), 2)
+            else:
+                cat_scores[model] = None
+        pivot[f"CAT_{cat_name.upper()}"] = pd.Series(cat_scores)
+
     pivot = pivot.sort_values("COMPOSITE", ascending=False)
 
     os.makedirs(out_dir, exist_ok=True)
@@ -84,6 +101,15 @@ def build_report(scores_csv: str, out_dir: str):
     uncertainty_path = os.path.join(out_dir, "uncertainty.csv")
     pd.DataFrame(uncertainty_rows).to_csv(uncertainty_path, index=False)
     print(f"Uncertainty table saved to {uncertainty_path}")
+
+    # Category-level summary
+    print("\n--- Category Breakdown ---")
+    cat_summary = pivot[[c for c in pivot.columns if c.startswith("CAT_")]].copy()
+    cat_summary.columns = [c.replace("CAT_", "").lower() for c in cat_summary.columns]
+    print(cat_summary.to_string())
+    cat_path = os.path.join(out_dir, "category_scores.csv")
+    cat_summary.to_csv(cat_path)
+    print(f"\nCategory scores saved to {cat_path}")
 
     return pivot
 

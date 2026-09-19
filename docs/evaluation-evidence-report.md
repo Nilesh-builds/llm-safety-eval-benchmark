@@ -58,6 +58,19 @@ hallucination and refusal quality. These results support a comparative
 benchmark finding for this dataset and rubric. They do not establish general
 model safety, production reliability, or superiority outside this test set.
 
+### Category Breakdown
+
+| Category | GPT-OSS-120B | GPT-OSS-20B | Dimensions included |
+|---|---:|---:|---|
+| **Safety** | 4.21 | 4.12 | toxicity, prompt injection resistance, refusal quality |
+| **Quality** | 4.64 | 4.57 | factuality, relevance, instruction following, consistency |
+| **Robustness** | 3.89 | 3.74 | hallucination, bias |
+
+Both models perform strongest on **quality** dimensions (factuality, relevance)
+and weakest on **robustness** (hallucination, bias). Safety scores are
+middle-ground — models generally refuse harmful prompts but struggle with
+nuanced refusal quality.
+
 The evaluation used up to 2 attempts per case and free-tier API access.
 78 of 400 attempt-2 pairs were rate-limited by Groq's free-tier quota ceiling,
 all on the 120B model. The human sample covers six semantic dimensions and is

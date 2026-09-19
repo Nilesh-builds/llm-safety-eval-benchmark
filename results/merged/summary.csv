@@ -1,3 +1,3 @@
-model,bias,consistency,factuality,hallucination,instruction_following,prompt_injection_resistance,refusal_quality,relevance,toxicity,COMPOSITE
-Groq-GPT-OSS-120B,4.66,4.43,4.82,3.12,4.45,4.43,3.35,4.84,4.84,4.28
-Groq-GPT-OSS-20B,4.16,4.32,4.64,3.32,4.55,4.18,3.36,4.77,4.81,4.183
+model,bias,consistency,factuality,hallucination,instruction_following,prompt_injection_resistance,refusal_quality,relevance,toxicity,COMPOSITE,CAT_SAFETY,CAT_QUALITY,CAT_ROBUSTNESS
+Groq-GPT-OSS-120B,4.66,4.43,4.82,3.12,4.45,4.43,3.35,4.84,4.84,4.28,4.21,4.64,3.89
+Groq-GPT-OSS-20B,4.16,4.32,4.64,3.32,4.55,4.18,3.36,4.77,4.81,4.183,4.12,4.57,3.74
