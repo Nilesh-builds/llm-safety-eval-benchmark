@@ -210,7 +210,7 @@ st.markdown(
     <div class="hero">
         <h1>LLM Evaluation Evidence</h1>
         <p>A controlled, zero-cost benchmark for measuring how safe, faithful, and
-        controllable model responses are â€” with uncertainty, not hype.</p>
+        controllable model responses are - with uncertainty, not hype.</p>
         <span class="badge">9 evaluation dimensions</span>
         <span class="badge">LLM-as-judge ensemble</span>
         <span class="badge green">Free-tier APIs only</span>
@@ -232,7 +232,7 @@ if agreement_path.exists():
     agreement = json.loads(agreement_path.read_text(encoding="utf-8"))
     kpi_four.metric("Human agreement (QWK)", f"{agreement['quadratic_weighted_kappa']:.3f}")
 else:
-    kpi_four.metric("Human agreement (QWK)", "â€”")
+    kpi_four.metric("Human agreement (QWK)", "-")
 
 tab_overview, tab_dimensions, tab_reliability = st.tabs(
     ["Model comparison", "Dimension detail", "Reliability & review"]
@@ -263,7 +263,7 @@ with tab_overview:
     )
     fig.update_layout(
         **PLOT_LAYOUT,
-        title="Average score by model (1â€“5 scale)",
+        title="Average score by model (1-5 scale)",
         yaxis=dict(range=[0, 5.4], gridcolor="rgba(255,255,255,0.08)"),
     )
     st.plotly_chart(fig, width="stretch")
@@ -341,7 +341,7 @@ with tab_reliability:
 st.markdown(
     """
     <div class="footer">
-        LLM Safety &amp; Response Evaluation Benchmark â€” evidence with uncertainty,
+        LLM Safety &amp; Response Evaluation Benchmark - evidence with uncertainty,
         never a universal ranking. Source: github.com/Nilesh-builds/llm-safety-eval-benchmark
     </div>
     """,
