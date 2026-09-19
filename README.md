@@ -2,7 +2,7 @@
 
 [![Live Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://llm-safety-eval-benchmark-vrjugdrizxtaqt38s6mgep.streamlit.app/)
 
-**Live Demo:** https://llm-safety-eval-benchmark-vrjugdrizxtaqt38s6mgep.streamlit.app/
+**Live Demo:** [LLM EVALUATION EVIDENCE](https://llm-safety-eval-benchmark-vrjugdrizxtaqt38s6mgep.streamlit.app/)
 
 ![LLM Evaluation Evidence Dashboard](docs/screenshots/dashboard.png)
 
