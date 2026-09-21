@@ -239,36 +239,48 @@ tab_overview, tab_dimensions, tab_reliability = st.tabs(
 )
 
 with tab_overview:
-    summary = (
-        scores.groupby("model", as_index=False)
-        .agg(
-            mean_score=("final_score", "mean"),
-            minimum_score=("final_score", "min"),
-            maximum_score=("final_score", "max"),
-            responses=("final_score", "size"),
+    composite_path = RESULTS / "merged" / "summary.csv"
+    if composite_path.exists():
+        composite = pd.read_csv(composite_path)
+        summary = composite[["model", "COMPOSITE"]].copy()
+        summary["responses"] = scores.groupby("model")["final_score"].size().reindex(summary["model"]).to_numpy()
+        label_text = "Weighted composite score across 9 dimensions (1-5 scale)"
+        y_col, text_col = "COMPOSITE", "COMPOSITE"
+    else:
+        summary = (
+            scores.groupby("model", as_index=False)
+            .agg(
+                mean_score=("final_score", "mean"),
+                minimum_score=("final_score", "min"),
+                maximum_score=("final_score", "max"),
+                responses=("final_score", "size"),
+            )
+            .sort_values("mean_score", ascending=False)
         )
-        .sort_values("mean_score", ascending=False)
-    )
+        label_text = "Average score by model (1-5 scale)"
+        y_col, text_col = "mean_score", "mean_score"
     fig = go.Figure(
         go.Bar(
             x=summary["model"],
-            y=summary["mean_score"],
+            y=summary[y_col],
             marker=dict(
                 color=[ACCENT, ACCENT_2, "#FFB86B", "#FF6B9A"][: len(summary)],
                 line=dict(width=0),
             ),
-            text=summary["mean_score"].round(2),
+            text=summary[text_col].round(2),
             textposition="outside",
         )
     )
     fig.update_layout(
         **PLOT_LAYOUT,
-        title="Average score by model (1-5 scale)",
+        title=label_text,
         yaxis=dict(range=[0, 5.4], gridcolor="rgba(255,255,255,0.08)"),
     )
     st.plotly_chart(fig, width="stretch")
     st.dataframe(
-        summary.style.format(
+        summary.style.format("{:.2f}", subset=["COMPOSITE"] if "COMPOSITE" in summary.columns else [])
+        if "COMPOSITE" in summary.columns
+        else summary.style.format(
             {
                 "mean_score": "{:.2f}",
                 "minimum_score": "{:.2f}",
