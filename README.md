@@ -132,7 +132,7 @@ Both models are strong on quality (factuality, relevance) and weak on robustness
 This is a prototype, not a production safety certification. Here's what I'd tell an interviewer:
 
 - **200 cases is a start, not a comprehensive test.** Rankings shouldn't be treated as stable yet.
-- **Free-tier APIs have quota limits.** 78 of 400 attempt-2 pairs were rate-limited (all on the 120B model).
+- **Free-tier APIs have quota limits.** 78 of 400 attempt-2 pairs were rate-limited (42 on 120B, 36 on 20B).
 - **The judge has blind spots.** Both judge models are from the Llama/Gemma family — they may share correlated biases a more diverse panel wouldn't.
 - **Rule-based checks are precision-optimized.** A model can dodge a keyword check with different phrasing.
 - **Human agreement is strong (QWK 0.902) but the sample is small** (60 reviews). It proves the rubric is scorable, not that the judge is perfect.

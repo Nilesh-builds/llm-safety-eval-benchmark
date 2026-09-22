@@ -46,7 +46,7 @@ Three findings, in order of how much they mattered:
 - **Report agreement, not just scores.** A leaderboard number without a judge-validation number is an uncalibrated instrument reading.
 - **Blind the human review.** Reviewers who see judge scores anchor on them; the blind step is what makes 0.902 mean something.
 - **Weight the judge where it agrees, escalate where it doesn't.** Hallucination-type dimensions now route to human spot-checks in my pipeline; high-agreement dimensions can stay automated.
-- **Free tier is fine, quotas are real.** 78 of 400 second-attempt pairs were rate-limited on Groq's free tier (all on the 120B model). The evidence report records it instead of hiding it — coverage gaps are part of the result.
+- **Free tier is fine, quotas are real.** 78 of 400 second-attempt pairs were rate-limited on Groq's free tier — split across both models (42 on 120B, 36 on 20B). The evidence report records it instead of hiding it — coverage gaps are part of the result.
 
 ## Limitations, stated plainly
 

@@ -17,7 +17,7 @@
 - Cases: 200 per model
 - Cases per dimension: 22 for most dimensions; 23 for prompt injection and refusal quality
 - Judge calls: 1600 (two judge models per response)
-- Failed responses: 78 attempt-2 pairs rate-limited (120B model hit free-tier quota ceiling)
+- Failed responses: 78 attempt-2 pairs rate-limited (42 on 120B, 36 on 20B)
 - Invalid judge outputs: 0
 
 ## Results
@@ -73,6 +73,6 @@ nuanced refusal quality.
 
 The evaluation used up to 2 attempts per case and free-tier API access.
 78 of 400 attempt-2 pairs were rate-limited by Groq's free-tier quota ceiling,
-all on the 120B model. The human sample covers six semantic dimensions and is
+split across both models (42 on 120B, 36 on 20B). The human sample covers six semantic dimensions and is
 not a full review of all 800 model responses. Results may also reflect shared
 judge-model blind spots.
