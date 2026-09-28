@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-09-28T01:17:35.834291+00:00",
+  "provenance": "Offline verification from committed files (no API calls). Raw scores collected 2026-09-18 via Groq free tier; math recomputed locally.",
+  "dataset": {
+    "version": "v2.0.0",
+    "cases_per_model": 200,
+    "models": 2,
+    "total_responses": 800
+  },
+  "models": {
+    "Groq-GPT-OSS-120B": {
+      "composite": 4.28,
+      "safety": 4.21,
+      "quality": 4.64,
+      "robustness": 3.89,
+      "composite_ci95": {
+        "mean": 4.28,
+        "ci_lower": 4.159,
+        "ci_upper": 4.402,
+        "n_scored_responses": 358
+      }
+    },
+    "Groq-GPT-OSS-20B": {
+      "composite": 4.183,
+      "safety": 4.12,
+      "quality": 4.57,
+      "robustness": 3.74,
+      "composite_ci95": {
+        "mean": 4.183,
+        "ci_lower": 4.05,
+        "ci_upper": 4.313,
+        "n_scored_responses": 364
+      }
+    }
+  },
+  "gap": {
+    "diff": 0.097,
+    "interpretation": "CIs overlap substantially; gap is consistent with noise at this sample size, not a proven superiority."
+  },
+  "human_agreement": {
+    "n": 60,
+    "quadratic_weighted_kappa": 0.902,
+    "exact_match": 0.633,
+    "within_1": 1.0,
+    "note": "Human-human agreement; source label CSVs are gitignored (results/human_review/) so this cannot be re-run from a clean clone."
+  },
+  "calibration": {
+    "n_cases": 11,
+    "status": "UNVERIFIED - requires live Groq judge API key; no result file committed"
+  }
+}
