@@ -111,11 +111,18 @@ st.markdown(
         padding: 12px 16px; border-radius: 0 12px 12px 0; margin: 10px 0 4px; color: {TEXT};
     }}
 
-    /* tabs */
-    div[data-testid="stTabs"] [role="tablist"] {{ gap: 6px; border-bottom: 1px solid {LINE}; }}
-    div[data-testid="stTabs"] button {{ color: {MUTED}; font-weight: 600; }}
-    div[data-testid="stTabs"] button[aria-selected="true"] {{ color: #fff; }}
-    div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {{ background: {AMBER}; }}
+    /* section nav buttons */
+    div[data-testid="stButton"] button[kind="secondary"] {{
+        color: {MUTED}; font-weight: 700; border: 1px solid {LINE};
+        background: rgba(255,255,255,.02); border-radius: 999px;
+    }}
+    div[data-testid="stButton"] button[kind="secondary"]:hover {{
+        color: #fff; border-color: {AMBER};
+    }}
+    div[data-testid="stButton"] button[kind="primary"] {{
+        color: #0b0f1e; font-weight: 800; border: 1px solid {AMBER};
+        background: {AMBER}; border-radius: 999px;
+    }}
 
     div[data-testid="stDataFrame"] {{
         border: 1px solid {LINE}; border-radius: 14px; overflow: hidden;
@@ -264,12 +271,21 @@ k2.metric("Models evaluated", f"{scores['model'].nunique():,}")
 k3.metric("Dimensions", f"{scores['dimension'].nunique():,}")
 k4.metric("Human agreement (QWK)", f"{agreement['quadratic_weighted_kappa']:.3f}" if agreement else "-")
 
-tab_board, tab_dim, tab_deep, tab_rel = st.tabs(
-    ["Leaderboard", "Dimension map", "Model deep-dive", "Reliability & review"]
-)
+PAGES = ["Leaderboard", "Dimension map", "Model deep-dive", "Reliability & review"]
+if "page" not in st.session_state:
+    st.session_state.page = PAGES[0]
+nav = st.columns(4)
+for i, name in enumerate(PAGES):
+    with nav[i]:
+        if st.button(
+            name, key=f"nav_{i}", use_container_width=True,
+            type="primary" if st.session_state.page == name else "secondary",
+        ):
+            st.session_state.page = name
+            st.rerun()
 
-# ---- tab 1: leaderboard -----------------------------------------------------
-with tab_board:
+# ---- section 1: leaderboard -------------------------------------------------
+if st.session_state.page == "Leaderboard":
     medals = ["#1", "#2", "#3"]
     cols = st.columns(min(3, len(board)))
     for i, col in enumerate(cols):
@@ -334,8 +350,8 @@ with tab_board:
         hide_index=True,
     )
 
-# ---- tab 2: radar + heatmap -------------------------------------------------
-with tab_dim:
+# ---- section 2: radar + heatmap ---------------------------------------------
+if st.session_state.page == "Dimension map":
     left, right = st.columns(2)
     with left:
         dims = list(matrix.columns)
@@ -366,8 +382,8 @@ with tab_dim:
                           xaxis=dict(tickangle=-35), yaxis=dict(autorange="reversed"))
         st.plotly_chart(fig, width="stretch")
 
-# ---- tab 3: per-model CI ----------------------------------------------------
-with tab_deep:
+# ---- section 3: per-model CI ------------------------------------------------
+if st.session_state.page == "Model deep-dive":
     selected_model = st.selectbox("Model", sorted(scores["model"].unique()))
     model_scores = scores[scores["model"] == selected_model]
     detail = uncertainty[uncertainty["model"] == selected_model].sort_values("mean", ascending=False).copy()
@@ -394,8 +410,8 @@ with tab_deep:
     st.plotly_chart(fig, width="stretch")
     st.caption(f"Rows used for this model: {len(model_scores):,}. Wide intervals mean few samples, read them as uncertainty.")
 
-# ---- tab 4: reliability -----------------------------------------------------
-with tab_rel:
+# ---- section 4: reliability -------------------------------------------------
+if st.session_state.page == "Reliability & review":
     left, right = st.columns(2)
     with left:
         st.subheader("Human reviewer agreement")
@@ -403,7 +419,8 @@ with tab_rel:
             qwk = agreement["quadratic_weighted_kappa"]
             fig = go.Figure(go.Indicator(
                 mode="gauge+number", value=qwk,
-                number=dict(font=dict(family="JetBrains Mono", color="#fff")),
+                number=dict(valueformat=".2f",
+                            font=dict(family="JetBrains Mono", color="#fff", size=44)),
                 gauge=dict(
                     axis=dict(range=[0, 1], tickcolor=MUTED),
                     bar=dict(color=AMBER, thickness=0.28),
@@ -412,6 +429,7 @@ with tab_rel:
                            dict(range=[.6, .8], color="#16404a"), dict(range=[.8, 1], color="#1b5a5a")],
                 ),
                 title=dict(text="Quadratic weighted kappa"),
+                domain=dict(x=[0, 1], y=[0, 1]),
             ))
             fig.update_layout(**layout(height=260, margin=dict(l=30, r=30, t=60, b=10)))
             st.plotly_chart(fig, width="stretch")
