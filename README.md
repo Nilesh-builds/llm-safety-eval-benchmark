@@ -13,6 +13,10 @@
 
 **[Why](#-why-this-exists) · [Dimensions](#-key-concepts) · [Pipeline](#-how-it-works) · [Quick start](#-quick-start) · [Results](#-results) · [Trust](#-how-to-validate-and-trust-it) · [Extend](#-extension-guide) · [Limitations](#-honest-limitations)**
 
+<br/>
+
+<a href="https://llm-safety-eval-benchmark-vrjugdrizxtaqt38s6mgep.streamlit.app/"><img src="https://img.shields.io/badge/Open_the_live_app-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Open the live app"/></a>
+
 </div>
 
 <br/>
