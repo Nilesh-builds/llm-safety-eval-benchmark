@@ -1,0 +1,33 @@
+name: pipeline-smoke-test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      # No API keys in CI, so providers fall back to mock responses.
+      # Full v2 dataset in mock mode is fast (no network) and exercises
+      # every scorer path; a --case-limit subset would leave unscored
+      # dimensions and break the report heatmap.
+      - name: Run pipeline end to end (mock mode)
+        run: |
+          python -m src.runner --data data/test_cases_v2.json --dataset-version v2.0.0 --label mock --out results/smoke
+          python -m src.report --scores results/smoke/scores.csv --out results/smoke
+      - name: Confirm smoke outputs
+        run: |
+          test -f results/smoke/scores.csv
+          test -f results/smoke/summary.csv
+          test -f results/smoke/uncertainty.csv
+          test -f results/smoke/category_scores.csv
+          test -f results/smoke/composite_scores.png
+          test -f results/smoke/dimension_heatmap.png

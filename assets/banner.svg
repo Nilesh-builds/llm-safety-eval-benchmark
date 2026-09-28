@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 370" width="1280" height="370" role="img" aria-label="LLM Safety Eval Benchmark banner">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#080c18"/><stop offset="1" stop-color="#0f1730"/></linearGradient>
+<linearGradient id="ttl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#9fb4e6"/></linearGradient>
+<radialGradient id="glow" cx="1010" cy="185" r="220" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffb547" stop-opacity=".16"/><stop offset="1" stop-color="#ffb547" stop-opacity="0"/></radialGradient>
+<pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#141d36" stroke-width="1"/></pattern>
+<linearGradient id="sweep" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3dd6c6" stop-opacity="0"/><stop offset="1" stop-color="#3dd6c6" stop-opacity=".45"/></linearGradient>
+</defs>
+<style>
+.h{font:800 54px 'Inter','Segoe UI','Helvetica Neue',Arial,sans-serif;letter-spacing:-1.5px}
+.s{font:500 20px 'Inter','Segoe UI',Arial,sans-serif;fill:#8fa2cf}
+.m{font:600 13px 'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;fill:#3dd6c6}
+.lb{font:600 11px 'SF Mono',Menlo,Consolas,monospace;fill:#8fa2cf}
+.pill{fill:#101a33;stroke:#22304f}
+.pt{font:600 12px 'SF Mono',Menlo,Consolas,monospace;fill:#c9d6f5}
+</style>
+<rect width="1280" height="370" fill="url(#bg)"/>
+<rect width="1280" height="370" fill="url(#grid)"/>
+<rect x="0" y="0" width="1280" height="370" fill="url(#glow)"/>
+<rect x="0" y="366" width="1280" height="4" fill="#ffb547"/>
+<g transform="translate(64,0)">
+<circle cx="6" cy="72" r="5" fill="#3dd6c6"><animate attributeName="opacity" values="1;.25;1" dur="2s" repeatCount="indefinite"/></circle>
+<text x="22" y="77" class="m">9 DIMENSIONS  /  FREE-TIER APIS  /  REPRODUCIBLE</text>
+<text x="0" y="158" class="h" fill="url(#ttl)">LLM Safety &amp;</text>
+<text x="0" y="216" class="h" fill="url(#ttl)">Response Benchmark</text>
+<text x="0" y="256" class="s">Measure whether a model is safe, faithful and controllable.</text>
+<g transform="translate(0,286)">
+<rect class="pill" width="158" height="34" rx="17"/><text x="79" y="22" text-anchor="middle" class="pt">200 test cases</text>
+<rect class="pill" x="170" width="176" height="34" rx="17"/><text x="258" y="22" text-anchor="middle" class="pt">LLM-judge ensemble</text>
+<rect class="pill" x="358" width="150" height="34" rx="17"/><text x="433" y="22" text-anchor="middle" class="pt">$0 to run</text>
+</g></g>
+<polygon points="1010.0,155.0 1029.3,162.0 1039.5,179.8 1036.0,200.0 1020.3,213.2 999.7,213.2 984.0,200.0 980.5,179.8 990.7,162.0" fill="none" stroke="#22304f" stroke-width="1"/><polygon points="1010.0,125.0 1048.6,139.0 1069.1,174.6 1062.0,215.0 1030.5,241.4 989.5,241.4 958.0,215.0 950.9,174.6 971.4,139.0" fill="none" stroke="#22304f" stroke-width="1"/><polygon points="1010.0,95.0 1067.9,116.1 1098.6,169.4 1087.9,230.0 1040.8,269.6 979.2,269.6 932.1,230.0 921.4,169.4 952.1,116.1" fill="none" stroke="#22304f" stroke-width="1"/><polygon points="1010.0,65.0 1087.1,93.1 1128.2,164.2 1113.9,245.0 1051.0,297.8 969.0,297.8 906.1,245.0 891.8,164.2 932.9,93.1" fill="none" stroke="#22304f" stroke-width="1"/><line x1="1010" y1="185" x2="1010.0" y2="65.0" stroke="#22304f" stroke-width="1"/><line x1="1010" y1="185" x2="1087.1" y2="93.1" stroke="#22304f" stroke-width="1"/><line x1="1010" y1="185" x2="1128.2" y2="164.2" stroke="#22304f" stroke-width="1"/><line x1="1010" y1="185" x2="1113.9" y2="245.0" stroke="#22304f" stroke-width="1"/><line x1="1010" y1="185" x2="1051.0" y2="297.8" stroke="#22304f" stroke-width="1"/><line x1="1010" y1="185" x2="969.0" y2="297.8" stroke="#22304f" stroke-width="1"/><line x1="1010" y1="185" x2="906.1" y2="245.0" stroke="#22304f" stroke-width="1"/><line x1="1010" y1="185" x2="891.8" y2="164.2" stroke="#22304f" stroke-width="1"/><line x1="1010" y1="185" x2="932.9" y2="93.1" stroke="#22304f" stroke-width="1"/>
+<polygon points="1010.0,113.0 1075.6,106.9 1092.7,170.4 1103.5,239.0 1038.7,263.9 987.4,247.0 921.7,236.0 950.9,174.6 959.9,125.2" fill="#3dd6c6" fill-opacity=".10" stroke="#3dd6c6" stroke-width="2" stroke-dasharray="5 4"/>
+<polygon points="1010.0,83.0 1064.0,120.7 1116.4,166.2 1087.9,230.0 1049.0,292.1 977.2,275.2 947.6,221.0 927.3,170.4 944.4,106.9" fill="#ffb547" fill-opacity=".18" stroke="#ffb547" stroke-width="2.5"/>
+<circle cx="1010.0" cy="83.0" r="3" fill="#ffb547"/><circle cx="1064.0" cy="120.7" r="3" fill="#ffb547"/><circle cx="1116.4" cy="166.2" r="3" fill="#ffb547"/><circle cx="1087.9" cy="230.0" r="3" fill="#ffb547"/><circle cx="1049.0" cy="292.1" r="3" fill="#ffb547"/><circle cx="977.2" cy="275.2" r="3" fill="#ffb547"/><circle cx="947.6" cy="221.0" r="3" fill="#ffb547"/><circle cx="927.3" cy="170.4" r="3" fill="#ffb547"/><circle cx="944.4" cy="106.9" r="3" fill="#ffb547"/>
+<g><path d="M1010,185 L1010,65 A120,120 0 0 0 918.1,107.9 Z" fill="url(#sweep)"/>
+<animateTransform attributeName="transform" type="rotate" from="0 1010 185" to="360 1010 185" dur="9s" repeatCount="indefinite"/></g>
+<text x="1010.0" y="47.0" text-anchor="middle" class="lb">Instruction</text><text x="1101.3" y="80.2" text-anchor="start" class="lb">Factuality</text><text x="1149.8" y="164.3" text-anchor="start" class="lb">Relevance</text><text x="1133.0" y="260.0" text-anchor="start" class="lb">Bias</text><text x="1058.6" y="322.4" text-anchor="start" class="lb">Toxicity</text><text x="961.4" y="322.4" text-anchor="end" class="lb">Refusal</text><text x="887.0" y="260.0" text-anchor="end" class="lb">Injection</text><text x="870.2" y="164.3" text-anchor="end" class="lb">Hallucination</text><text x="918.7" y="80.2" text-anchor="end" class="lb">Consistency</text>
+</svg>
