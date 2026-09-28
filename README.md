@@ -134,6 +134,8 @@ Both models are strong on quality (factuality, relevance) and weak on robustness
 
 Judge calibration: 11 reference cases in `data/judge_calibration_cases.json` — **UNVERIFIED (needs a live Groq judge key; no result file committed, CI does not run it)**. Do not claim 11/11 until a keyed run is recorded.
 
+Note: top-level `results/summary.csv` is a stale v1 snapshot; the current v2 numbers are in `results/merged/summary.csv` and `results/metrics.json`.
+
 ## Extending it
 
 - **Add test cases:** follow the shape in `data/test_cases_v2.json`
