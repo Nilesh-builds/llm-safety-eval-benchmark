@@ -1,6 +1,9 @@
 # LLM Safety & Response Evaluation Benchmark
 
+[![Tests](https://github.com/Nilesh-builds/llm-safety-eval-benchmark/actions/workflows/tests.yml/badge.svg)](https://github.com/Nilesh-builds/llm-safety-eval-benchmark/actions/workflows/tests.yml)
 [![Live Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://llm-safety-eval-benchmark-vrjugdrizxtaqt38s6mgep.streamlit.app/)
+
+> GPT-OSS-120B composite 4.280 [95% CI 4.16–4.40] vs GPT-OSS-20B 4.183 [4.05–4.31] on 200 cases × 2 models (800 responses). Gap 0.097 with overlapping CIs — consistent with noise, not a proven superiority. Source: `results/metrics.json`.
 
 **Live Demo:** [LLM EVALUATION EVIDENCE](https://llm-safety-eval-benchmark-vrjugdrizxtaqt38s6mgep.streamlit.app/)
 
@@ -78,7 +81,7 @@ I spent real time on this, because a garbage judge makes the whole benchmark mea
 
 1. **Calibration against known answers** — I wrote responses that are obviously good or obviously bad, gave them known scores, and checked whether the judge agrees. If it can't get the easy cases right, don't trust it on the hard ones.
 
-2. **Human agreement** — 60 samples, scored blind by 2 independent reviewers. Quadratic weighted kappa: **0.902** (almost perfect agreement). Exact match: 70%. All disagreements within 1 point.
+2. **Human agreement** — 60 samples, scored blind by 2 independent reviewers. Human-human quadratic weighted kappa: **0.902** (almost perfect agreement, n=60). Exact match: 63.3%. All disagreements within 1 point. Judge-vs-human agreement is weaker (reviewer 1 vs judge QWK 0.625, reviewer 2 vs judge 0.616) — the judge is a useful signal, not a final authority. Source labels live in `results/human_review/` (gitignored) so this step cannot be re-run from a clean clone; the committed result is `results/merged/reviewer_agreement.json`.
 
 ```bash
 python -m src.calibration
@@ -114,12 +117,22 @@ You can also just look at the CSVs directly in `results/merged/`.
 
 ## Results
 
-| Model | Composite | Safety | Quality | Robustness |
+Source: `results/metrics.json` (math verified offline with `python scripts/build_metrics.py`; raw scores collected 2026-09-18 via Groq free tier).
+
+| Model | Composite [95% CI] | Safety | Quality | Robustness |
 |---|---:|---:|---:|---:|
-| GPT-OSS-120B | 4.280 | 4.21 | 4.64 | 3.89 |
-| GPT-OSS-20B | 4.183 | 4.12 | 4.57 | 3.74 |
+| GPT-OSS-120B | 4.280 [4.16–4.40] | 4.21 | 4.64 | 3.89 |
+| GPT-OSS-20B | 4.183 [4.05–4.31] | 4.12 | 4.57 | 3.74 |
+
+Gap: 0.097 with substantially overlapping CIs — **consistent with noise at this sample size, not a proven superiority**. Per-dimension 95% bootstrap intervals are in `results/merged/uncertainty.csv`.
+
+![Model comparison](docs/screenshots/model_comparison.png)
+![Confidence intervals](docs/screenshots/confidence_intervals.png)
+![Human agreement](docs/screenshots/human_agreement.png)
 
 Both models are strong on quality (factuality, relevance) and weak on robustness (hallucination, bias). Full details in the [evidence report](docs/evaluation-evidence-report.md).
+
+Judge calibration: 11 reference cases in `data/judge_calibration_cases.json` — **UNVERIFIED (needs a live Groq judge key; no result file committed, CI does not run it)**. Do not claim 11/11 until a keyed run is recorded.
 
 ## Extending it
 
