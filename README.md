@@ -194,9 +194,6 @@ Per-dimension 95% bootstrap intervals are in
   <img src="docs/screenshots/model_comparison.png" alt="Model comparison chart" width="48%"/>
   <img src="docs/screenshots/confidence_intervals.png" alt="Confidence intervals chart" width="48%"/>
 </p>
-<p align="center">
-  <img src="docs/screenshots/dashboard.png" alt="Evidence dashboard" width="90%"/>
-</p>
 
 <!--
   Regenerating charts: after `python -m src.report`, fresh outputs land in
