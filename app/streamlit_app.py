@@ -111,18 +111,45 @@ st.markdown(
         padding: 12px 16px; border-radius: 0 12px 12px 0; margin: 10px 0 4px; color: {TEXT};
     }}
 
-    /* section nav buttons */
-    div[data-testid="stButton"] button[kind="secondary"] {{
-        color: {MUTED}; font-weight: 700; border: 1px solid {LINE};
-        background: rgba(255,255,255,.02); border-radius: 999px;
+    /* tabs as pill buttons */
+    div[data-testid="stTabs"] [role="tablist"] {{
+        gap: 10px; border-bottom: none; padding: 6px 0 14px; flex-wrap: wrap;
     }}
-    div[data-testid="stButton"] button[kind="secondary"]:hover {{
-        color: #fff; border-color: {AMBER};
+    div[data-testid="stTabs"] [data-baseweb="tab-highlight"],
+    div[data-testid="stTabs"] [data-baseweb="tab-border"] {{ display: none; }}
+    div[data-testid="stTabs"] button[role="tab"] {{
+        height: 46px; padding: 0 22px; border-radius: 12px; outline: none !important;
+        background: rgba(255,255,255,.04); border: 1px solid {LINE};
+        transition: transform .15s ease, border-color .15s ease, background .15s ease;
     }}
-    div[data-testid="stButton"] button[kind="primary"] {{
-        color: #0b0f1e; font-weight: 800; border: 1px solid {AMBER};
-        background: {AMBER}; border-radius: 999px;
+    div[data-testid="stTabs"] button[role="tab"] p {{
+        color: {MUTED} !important; font-weight: 700; font-size: .95rem; margin: 0;
     }}
+    div[data-testid="stTabs"] button[role="tab"]:hover {{
+        transform: translateY(-2px); border-color: {TEAL}; background: rgba(61,214,198,.08);
+    }}
+    div[data-testid="stTabs"] button[role="tab"]:focus-visible {{ box-shadow: 0 0 0 2px {TEAL}; }}
+    div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {{
+        background: linear-gradient(135deg, {AMBER}, #ff8f3d); border-color: {AMBER};
+        box-shadow: 0 8px 24px rgba(255,181,71,.28);
+    }}
+    div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] p {{ color: #1a1206 !important; }}
+
+    /* action buttons */
+    .stDownloadButton button, .stButton button {{
+        border-radius: 12px; border: 1px solid {TEAL}; background: rgba(61,214,198,.08);
+        color: {TEAL}; font-weight: 700; padding: 8px 20px; transition: all .15s ease;
+    }}
+    .stDownloadButton button:hover, .stButton button:hover {{
+        background: {TEAL}; color: #04201d; border-color: {TEAL}; transform: translateY(-2px);
+    }}
+    .stDownloadButton button p, .stButton button p {{ color: inherit !important; }}
+
+    /* multiselect chips (default red) */
+    span[data-baseweb="tag"] {{
+        background: rgba(255,181,71,.16) !important; border: 1px solid {AMBER};
+    }}
+    span[data-baseweb="tag"] span {{ color: {AMBER} !important; }}
 
     div[data-testid="stDataFrame"] {{
         border: 1px solid {LINE}; border-radius: 14px; overflow: hidden;
@@ -271,21 +298,12 @@ k2.metric("Models evaluated", f"{scores['model'].nunique():,}")
 k3.metric("Dimensions", f"{scores['dimension'].nunique():,}")
 k4.metric("Human agreement (QWK)", f"{agreement['quadratic_weighted_kappa']:.3f}" if agreement else "-")
 
-PAGES = ["Leaderboard", "Dimension map", "Model deep-dive", "Reliability & review"]
-if "page" not in st.session_state:
-    st.session_state.page = PAGES[0]
-nav = st.columns(4)
-for i, name in enumerate(PAGES):
-    with nav[i]:
-        if st.button(
-            name, key=f"nav_{i}", use_container_width=True,
-            type="primary" if st.session_state.page == name else "secondary",
-        ):
-            st.session_state.page = name
-            st.rerun()
+tab_board, tab_dim, tab_deep, tab_rel = st.tabs(
+    ["🏆 Leaderboard", "🧭 Dimension map", "🔬 Model deep-dive", "🛡️ Reliability & review"]
+)
 
-# ---- section 1: leaderboard -------------------------------------------------
-if st.session_state.page == "Leaderboard":
+# ---- tab 1: leaderboard -----------------------------------------------------
+with tab_board:
     medals = ["#1", "#2", "#3"]
     cols = st.columns(min(3, len(board)))
     for i, col in enumerate(cols):
@@ -349,9 +367,11 @@ if st.session_state.page == "Leaderboard":
         width="stretch",
         hide_index=True,
     )
+    st.download_button("⬇ Download leaderboard CSV", board.to_csv(index=False).encode("utf-8"),
+                       "leaderboard.csv", "text/csv")
 
-# ---- section 2: radar + heatmap ---------------------------------------------
-if st.session_state.page == "Dimension map":
+# ---- tab 2: radar + heatmap -------------------------------------------------
+with tab_dim:
     left, right = st.columns(2)
     with left:
         dims = list(matrix.columns)
@@ -381,9 +401,11 @@ if st.session_state.page == "Dimension map":
         fig.update_layout(**layout(title="Model × dimension heatmap", height=460),
                           xaxis=dict(tickangle=-35), yaxis=dict(autorange="reversed"))
         st.plotly_chart(fig, width="stretch")
+    st.download_button("⬇ Download model × dimension matrix", matrix.round(3).to_csv().encode("utf-8"),
+                       "dimension_matrix.csv", "text/csv")
 
-# ---- section 3: per-model CI ------------------------------------------------
-if st.session_state.page == "Model deep-dive":
+# ---- tab 3: per-model CI ----------------------------------------------------
+with tab_deep:
     selected_model = st.selectbox("Model", sorted(scores["model"].unique()))
     model_scores = scores[scores["model"] == selected_model]
     detail = uncertainty[uncertainty["model"] == selected_model].sort_values("mean", ascending=False).copy()
@@ -410,8 +432,8 @@ if st.session_state.page == "Model deep-dive":
     st.plotly_chart(fig, width="stretch")
     st.caption(f"Rows used for this model: {len(model_scores):,}. Wide intervals mean few samples, read them as uncertainty.")
 
-# ---- section 4: reliability -------------------------------------------------
-if st.session_state.page == "Reliability & review":
+# ---- tab 4: reliability -----------------------------------------------------
+with tab_rel:
     left, right = st.columns(2)
     with left:
         st.subheader("Human reviewer agreement")
@@ -419,8 +441,8 @@ if st.session_state.page == "Reliability & review":
             qwk = agreement["quadratic_weighted_kappa"]
             fig = go.Figure(go.Indicator(
                 mode="gauge+number", value=qwk,
-                number=dict(valueformat=".2f",
-                            font=dict(family="JetBrains Mono", color="#fff", size=44)),
+                number=dict(font=dict(family="JetBrains Mono", color="#fff", size=38)),
+                domain=dict(x=[0.1, 0.9], y=[0.02, 0.78]),
                 gauge=dict(
                     axis=dict(range=[0, 1], tickcolor=MUTED),
                     bar=dict(color=AMBER, thickness=0.28),
@@ -429,9 +451,8 @@ if st.session_state.page == "Reliability & review":
                            dict(range=[.6, .8], color="#16404a"), dict(range=[.8, 1], color="#1b5a5a")],
                 ),
                 title=dict(text="Quadratic weighted kappa"),
-                domain=dict(x=[0, 1], y=[0, 1]),
             ))
-            fig.update_layout(**layout(height=260, margin=dict(l=30, r=30, t=60, b=10)))
+            fig.update_layout(**layout(height=310, margin=dict(l=30, r=30, t=50, b=10)))
             st.plotly_chart(fig, width="stretch")
             a, b = st.columns(2)
             a.metric("Exact match", f"{agreement['exact_match']:.1%}")
