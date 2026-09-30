@@ -286,6 +286,7 @@ llm-safety-eval-benchmark/
 │   ├── runner.py                     models × cases → raw_responses.json, scores.csv
 │   ├── report.py                     summary tables, charts, category scores, CIs
 │   ├── agreement.py                  judge vs. human: correlation, MAE, kappa
+│   ├── annotations.py                annotation CSV contracts (used by agreement)
 │   ├── calibration.py                judge sanity-check against known answers
 │   ├── statistics.py                 bootstrap confidence intervals
 │   ├── schemas.py                    input validation before any API calls
@@ -296,7 +297,9 @@ llm-safety-eval-benchmark/
 │   ├── build_human_review_xlsx.py    formats the review workbook
 │   ├── build_metrics.py              rebuilds results/metrics.json offline
 │   ├── merge_runs.py                 merges multi-attempt runs
-│   └── generate_*.py                 chart/metric helpers
+│   ├── compare_human_reviewers.py    compares two independent reviewer CSVs
+│   ├── prepare_human_labels.py       restores judge columns onto blind workbooks
+│   └── generate_*.py                 dashboard composite + high-res chart helpers
 ├── 📊 app/streamlit_app.py           read-only evidence dashboard (no API calls)
 ├── 📓 notebooks/01_exploration.ipynb walk-through with interpretation
 ├── 🧪 tests/                         contract, scoring, statistics, metadata tests
